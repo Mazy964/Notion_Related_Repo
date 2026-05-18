@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Reading Heatmap</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+    padding: 24px;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 24px;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .title { font-size: 18px; font-weight: 600; }
+  .stats {
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    color: #8b949e;
+  }
+  .stat-num { color: #58a6ff; font-weight: 600; font-size: 16px; }
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #8b949e;
+    margin-bottom: 12px;
+    justify-content: flex-end;
+  }
+  .legend-box {
+    width: 12px; height: 12px;
+    border-radius: 2px;
+  }
+  .months {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #8b949e;
+    margin-bottom: 4px;
+    padding-left: 40px;
+  }
+  .heatmap-wrapper {
+    overflow-x: auto;
+  }
+  .heatmap {
+    display: flex;
+    gap: 3px;
+  }
+  .week-column {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .day-label {
+    width: 40px;
+    font-size: 12px;
+    color: #8b949e;
+    display: flex;
+    align-items: center;
+    height: 13px;
+    margin-right: 4px;
+  }
+  .day-cell {
+    width: 13px;
+    height: 13px;
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+  }
+  .day-cell:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background: #1f2937;
+    color: #c9d1d9;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+  }
+  .days-row {
+    display: flex;
+    gap: 3px;
+  }
+  .week-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-right: 4px;
+  }
+  .tooltip {
+    position: absolute;
+    background: #1f2937;
+    color: #c9d1d9;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 100;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="title">📚 2026 阅读热力图</div>
+    <div class="stats">
+      <div><div class="stat-num">207</div>阅读天数</div>
+      <div><div class="stat-num">5255</div>总页数</div>
+      <div><div class="stat-num">25</div>日均页数</div>
+      <div><div class="stat-num">10</div>最长连续</div>
+    </div>
+  </div>
+  <div class="legend">
+    <span>少</span>
+    <div class="legend-box" style="background:#ebedf0"></div>
+    <div class="legend-box" style="background:#9be9a8"></div>
+    <div class="legend-box" style="background:#40c463"></div>
+    <div class="legend-box" style="background:#30a14e"></div>
+    <div class="legend-box" style="background:#216e39"></div>
+    <span>多</span>
+  </div>
+  <div class="heatmap-wrapper">
+    <div class="heatmap">
+<div class="months"><span>Jan</span><span style="width:64px; display:inline-block"></span><span>Feb</span><span style="width:64px; display:inline-block"></span><span>Mar</span><span style="width:80px; display:inline-block"></span><span>Apr</span><span style="width:-736px; display:inline-block"></span><span>May</span><span style="width:32px; display:inline-block"></span><span>Jun</span><span style="width:80px; display:inline-block"></span><span>Jul</span><span style="width:64px; display:inline-block"></span><span>Aug</span><span style="width:80px; display:inline-block"></span><span>Sep</span><span style="width:64px; display:inline-block"></span><span>Oct</span><span style="width:64px; display:inline-block"></span><span>Nov</span><span style="width:80px; display:inline-block"></span><span>Dec</span></div>
+<div style="display:flex"><div class="week-labels"><div class="day-label"></div><div class="day-label">Mon</div><div class="day-label"></div><div class="day-label">Wed</div><div class="day-label"></div><div class="day-label">Fri</div><div class="day-label"></div></div><div style="display:flex; gap:3px"><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-05-18: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-05-19: 15 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-05-20: 5 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-05-21: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-05-22: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-05-23: 20 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-05-24: 10 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#30a14e" data-tooltip="2025-05-25: 20 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-05-26: 15 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-05-27: 50 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-05-28: 30 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-05-29: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-05-30: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-05-31: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-01: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-02: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-03: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-06-04: 5 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-05: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-06: 20 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-06-07: 10 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-06-08: 40 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-09: 30 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-06-10: 10 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-06-11: 50 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-12: 20 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-06-13: 50 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-14: 20 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-06-15: 40 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-16: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-17: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-06-18: 5 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-19: 20 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-06-20: 15 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-21: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-06-22: 60 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-23: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-24: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-25: 20 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-26: 20 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-27: 30 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-28: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-06-29: 40 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-06-30: 50 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-07-01: 5 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-07-02: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-03: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-04: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-05: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-06: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-07-07: 10 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-07-08: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-09: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-07-10: 10 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-07-11: 5 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-12: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-13: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-07-14: 5 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-07-15: 5 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-07-16: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-17: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-07-18: 5 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-07-19: 60 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-07-20: 40 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-21: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-07-22: 30 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-23: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-24: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-25: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-26: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-27: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-28: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-07-29: 15 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-07-30: 30 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-07-31: 30 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-08-01: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-02: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-03: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-08-04: 30 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-08-05: 30 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-08-06: 15 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-07: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-08-08: 5 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-08-09: 10 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-10: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-11: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-12: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-13: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-08-14: 15 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-15: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-16: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-08-17: 60 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-08-18: 5 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-19: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-08-20: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-21: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-08-22: 10 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-08-23: 40 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#30a14e" data-tooltip="2025-08-24: 20 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-08-25: 30 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-08-26: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-27: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-28: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-29: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-30: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-31: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-09-01: 30 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-02: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-03: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-09-04: 50 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-09-05: 30 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-06: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-07: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-09-08: 30 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-09: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-10: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-09-11: 10 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-09-12: 50 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-09-13: 10 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-09-14: 40 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-15: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-09-16: 10 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-17: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-09-18: 15 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-09-19: 5 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-20: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-21: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-09-22: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-23: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-09-24: 30 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-09-25: 5 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-09-26: 15 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-27: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-28: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-29: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-30: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-10-01: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-02: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-10-03: 30 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-04: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-10-05: 40 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-10-06: 5 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-10-07: 15 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-10-08: 5 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-10-09: 15 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-10-10: 10 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-10-11: 20 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-12: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-13: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-10-14: 10 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-15: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-16: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-17: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-18: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#40c463" data-tooltip="2025-10-19: 10 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-20: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-10-21: 30 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-10-22: 50 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-10-23: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-24: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-10-25: 60 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-10-26: 40 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-27: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-10-28: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-29: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-30: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-10-31: 20 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-11-01: 10 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-02: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-03: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-04: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-11-05: 15 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-11-06: 50 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-11-07: 30 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-08: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-09: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-11-10: 30 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-11-11: 10 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-12: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-13: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-14: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-11-15: 60 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-11-16: 40 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-11-17: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-18: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-19: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-20: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-11-21: 50 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-11-22: 10 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-23: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-11-24: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-25: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-26: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-11-27: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-28: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-11-29: 40 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-30: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-01: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-02: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-03: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-04: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-12-05: 50 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-12-06: 10 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-12-07: 60 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-08: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-09: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-10: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-11: 20 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-12-12: 5 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-13: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-14: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-15: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2025-12-16: 5 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-12-17: 10 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-18: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-19: 30 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-20: 20 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-21: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-12-22: 50 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-12-23: 50 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-12-24: 10 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2025-12-25: 15 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-26: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-27: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-28: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-29: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2025-12-30: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-31: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-01-01: 5 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-01-02: 20 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-01-03: 10 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-04: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-01-05: 5 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-01-06: 5 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-07: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-01-08: 15 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-01-09: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-10: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#40c463" data-tooltip="2026-01-11: 10 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-12: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-01-13: 30 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-14: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-01-15: 50 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-01-16: 15 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-01-17: 20 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-18: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-01-19: 5 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-20: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-21: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-22: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-01-23: 50 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-01-24: 20 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2026-01-25: 60 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-01-26: 10 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-27: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-28: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-29: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-01-30: 10 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-31: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-01: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-02: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-03: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-02-04: 5 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-02-05: 15 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-02-06: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-07: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#30a14e" data-tooltip="2026-02-08: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-09: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-02-10: 30 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-02-11: 15 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-02-12: 15 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-02-13: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-14: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2026-02-15: 40 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-02-16: 5 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-17: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-02-18: 10 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-02-19: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-20: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-02-21: 10 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-22: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-02-23: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-24: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-25: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-02-26: 15 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-27: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-02-28: 20 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-01: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-03-02: 10 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-03: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-04: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-03-05: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-06: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-07: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2026-03-08: 60 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-03-09: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-10: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-11: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-03-12: 5 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-03-13: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-14: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2026-03-15: 40 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-16: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-17: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-03-18: 30 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-19: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-03-20: 10 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-21: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#30a14e" data-tooltip="2026-03-22: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-23: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-03-24: 15 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-25: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-26: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-27: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-28: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-29: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-03-30: 20 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-31: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-01: 20 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-04-02: 5 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-04-03: 15 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-04-04: 40 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-04-05: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-04-06: 50 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-04-07: 5 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-04-08: 50 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-04-09: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-04-10: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-11: 20 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2026-04-12: 60 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-04-13: 5 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-14: 20 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-15: 30 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-04-16: 50 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-04-17: 5 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-04-18: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2026-04-19: 60 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-20: 30 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-04-21: 10 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-22: 30 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-04-23: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-04-24: 5 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-04-25: 40 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-04-26: 未阅读"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-27: 20 页"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-04-28: 15 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-04-29: 50 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-04-30: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-01: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-02: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-03: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-05-04: 15 页"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-05-05: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-06: 未阅读"></div>
+<div class="day-cell" style="background:#216e39" data-tooltip="2026-05-07: 50 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-08: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-09: 未阅读"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-10: 未阅读"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-11: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-05-12: 10 页"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-05-13: 5 页"></div>
+<div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-14: 未阅读"></div>
+<div class="day-cell" style="background:#9be9a8" data-tooltip="2026-05-15: 5 页"></div>
+<div class="day-cell" style="background:#30a14e" data-tooltip="2026-05-16: 20 页"></div>
+</div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-17: 未阅读"></div>
+<div class="day-cell" style="background:#40c463" data-tooltip="2026-05-18: 15 页"></div>
+</div></div></div>
+  </div>
+</div>
+<script>
+  // Add tooltips
+  document.querySelectorAll('.day-cell').forEach(cell => {
+    cell.addEventListener('mouseenter', e => {
+      const tooltip = document.createElement('div');
+      tooltip.className = 'tooltip';
+      tooltip.textContent = e.target.dataset.tooltip;
+      document.body.appendChild(tooltip);
+      const rect = e.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + window.pageXOffset - tooltip.offsetWidth/2 + 'px';
+      tooltip.style.top = rect.top + window.pageYOffset - 35 + 'px';
+      tooltip.style.display = 'block';
+      e.target._tooltip = tooltip;
+    });
+    cell.addEventListener('mouseleave', e => {
+      if (e.target._tooltip) {
+        e.target._tooltip.remove();
+      }
+    });
+  });
+</script>
+</body>
+</html>
