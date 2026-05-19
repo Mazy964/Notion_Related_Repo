@@ -23,17 +23,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;background
 .day-cell{width:13px;height:13px;border-radius:2px;cursor:pointer;position:relative}
 .week-labels{display:flex;flex-direction:column;gap:3px}
 .tooltip{position:fixed;background:#1f2937;color:#c9d1d9;padding:6px 10px;border-radius:6px;font-size:12px;pointer-events:none;z-index:100;display:none;white-space:nowrap}
+.loading{text-align:center;padding:40px;color:#8b949e}
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <div class="title">📚 2026 阅读热力图</div>
-    <div class="stats">
-      <div><div class="stat-num">207</div>阅读天数</div>
-      <div><div class="stat-num">5255</div>总页数</div>
-      <div><div class="stat-num">25</div>日均页数</div>
-      <div><div class="stat-num">10</div>最长连续</div>
+    <div class="title">📚 阅读热力图</div>
+    <div class="stats" id="stats">
+      <div><div class="stat-num" id="st-days">…</div>阅读天数</div>
+      <div><div class="stat-num" id="st-pages">…</div>总页数</div>
+      <div><div class="stat-num" id="st-avg">…</div>日均页数</div>
+      <div><div class="stat-num" id="st-streak">…</div>最长连续</div>
     </div>
   </div>
   <div class="legend">
@@ -45,94 +46,163 @@ body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;background
     <div class="legend-box" style="background:#216e39"></div>
     <span>多</span>
   </div>
-  <div class="heatmap-outer">
-    <div style="display:grid;grid-template-columns:40px repeat(53,13px);gap:3px;margin-bottom:2px">
-      <div></div>
-      <div style="grid-column:2;font-size:11px;color:#8b949e;text-align:center">May</div>
-      <div style="grid-column:3"></div>
-      <div style="grid-column:4;font-size:11px;color:#8b949e;text-align:center">Jun</div>
-      <div style="grid-column:5"></div>
-      <div style="grid-column:6"></div>
-      <div style="grid-column:7"></div>
-      <div style="grid-column:8"></div>
-      <div style="grid-column:9;font-size:11px;color:#8b949e;text-align:center">Jul</div>
-      <div style="grid-column:10"></div>
-      <div style="grid-column:11"></div>
-      <div style="grid-column:12"></div>
-      <div style="grid-column:13;font-size:11px;color:#8b949e;text-align:center">Aug</div>
-      <div style="grid-column:14"></div>
-      <div style="grid-column:15"></div>
-      <div style="grid-column:16"></div>
-      <div style="grid-column:17"></div>
-      <div style="grid-column:18;font-size:11px;color:#8b949e;text-align:center">Sep</div>
-      <div style="grid-column:19"></div>
-      <div style="grid-column:20"></div>
-      <div style="grid-column:21"></div>
-      <div style="grid-column:22;font-size:11px;color:#8b949e;text-align:center">Oct</div>
-      <div style="grid-column:23"></div>
-      <div style="grid-column:24"></div>
-      <div style="grid-column:25"></div>
-      <div style="grid-column:26;font-size:11px;color:#8b949e;text-align:center">Nov</div>
-      <div style="grid-column:27"></div>
-      <div style="grid-column:28"></div>
-      <div style="grid-column:29"></div>
-      <div style="grid-column:30"></div>
-      <div style="grid-column:31;font-size:11px;color:#8b949e;text-align:center">Dec</div>
-      <div style="grid-column:32"></div>
-      <div style="grid-column:33"></div>
-      <div style="grid-column:34"></div>
-      <div style="grid-column:35;font-size:11px;color:#8b949e;text-align:center">Jan</div>
-      <div style="grid-column:36"></div>
-      <div style="grid-column:37"></div>
-      <div style="grid-column:38"></div>
-      <div style="grid-column:39;font-size:11px;color:#8b949e;text-align:center">Feb</div>
-      <div style="grid-column:40"></div>
-      <div style="grid-column:41"></div>
-      <div style="grid-column:42"></div>
-      <div style="grid-column:43;font-size:11px;color:#8b949e;text-align:center">Mar</div>
-      <div style="grid-column:44"></div>
-      <div style="grid-column:45"></div>
-      <div style="grid-column:46"></div>
-      <div style="grid-column:47"></div>
-      <div style="grid-column:48;font-size:11px;color:#8b949e;text-align:center">Apr</div>
-      <div style="grid-column:49"></div>
-      <div style="grid-column:50"></div>
-      <div style="grid-column:51"></div>
-      <div style="grid-column:52;font-size:11px;color:#8b949e;text-align:center">May</div>
-      <div style="grid-column:53"></div>
-      <div style="grid-column:54"></div>
-    </div>
-    <div style="display:grid;grid-template-columns:40px repeat(53,13px);gap:3px">
-      <div class="week-labels">
-        <div class="day-label"></div>
-        <div class="day-label">Mon</div>
-        <div class="day-label"></div>
-        <div class="day-label">Wed</div>
-        <div class="day-label"></div>
-        <div class="day-label">Fri</div>
-        <div class="day-label"></div>
-      </div>
-      <div style="display:flex;gap:3px"><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-05-18: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-05-19: 15 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-05-20: 5 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-05-21: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-05-22: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-05-23: 20 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-05-24: 10 页"></div></div><div class="week-column"><div class="day-cell" style="background:#30a14e" data-tooltip="2025-05-25: 20 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-05-26: 15 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-05-27: 50 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-05-28: 30 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-05-29: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-05-30: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-05-31: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-01: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-02: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-03: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-06-04: 5 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-05: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-06: 20 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-06-07: 10 页"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-06-08: 40 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-09: 30 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-06-10: 10 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-06-11: 50 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-12: 20 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-06-13: 50 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-14: 20 页"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-06-15: 40 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-16: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-17: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-06-18: 5 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-19: 20 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-06-20: 15 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-21: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-06-22: 60 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-23: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-24: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-25: 20 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-26: 20 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-06-27: 30 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-06-28: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-06-29: 40 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-06-30: 50 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-07-01: 5 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-07-02: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-03: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-04: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-05: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-06: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-07-07: 10 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-07-08: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-09: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-07-10: 10 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-07-11: 5 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-12: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-13: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-07-14: 5 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-07-15: 5 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-07-16: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-17: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-07-18: 5 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-07-19: 60 页"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-07-20: 40 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-21: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-07-22: 30 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-23: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-24: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-25: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-26: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-27: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-07-28: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-07-29: 15 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-07-30: 30 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-07-31: 30 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-08-01: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-02: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-03: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-08-04: 30 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-08-05: 30 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-08-06: 15 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-07: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-08-08: 5 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-08-09: 10 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-10: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-11: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-12: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-13: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-08-14: 15 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-15: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-16: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-08-17: 60 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-08-18: 5 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-19: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-08-20: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-21: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-08-22: 10 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-08-23: 40 页"></div></div><div class="week-column"><div class="day-cell" style="background:#30a14e" data-tooltip="2025-08-24: 20 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-08-25: 30 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-08-26: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-27: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-28: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-29: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-30: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-08-31: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-09-01: 30 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-02: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-03: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-09-04: 50 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-09-05: 30 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-06: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-07: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-09-08: 30 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-09: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-10: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-09-11: 10 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-09-12: 50 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-09-13: 10 页"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-09-14: 40 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-15: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-09-16: 10 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-17: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-09-18: 15 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-09-19: 5 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-20: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-21: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-09-22: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-23: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-09-24: 30 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-09-25: 5 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-09-26: 15 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-27: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-28: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-29: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-09-30: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-10-01: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-02: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-10-03: 30 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-04: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-10-05: 40 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-10-06: 5 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-10-07: 15 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-10-08: 5 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-10-09: 15 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-10-10: 10 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-10-11: 20 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-12: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-13: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-10-14: 10 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-15: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-16: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-17: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-18: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#40c463" data-tooltip="2025-10-19: 10 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-20: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-10-21: 30 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-10-22: 50 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-10-23: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-24: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-10-25: 60 页"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-10-26: 40 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-27: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-10-28: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-29: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-10-30: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-10-31: 20 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-11-01: 10 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-02: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-03: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-04: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-11-05: 15 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-11-06: 50 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-11-07: 30 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-08: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-09: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-11-10: 30 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-11-11: 10 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-12: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-13: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-14: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-11-15: 60 页"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-11-16: 40 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-11-17: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-18: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-19: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-20: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-11-21: 50 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-11-22: 10 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-23: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-11-24: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-25: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-26: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-11-27: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-28: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-11-29: 40 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-11-30: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-01: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-02: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-03: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-04: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-12-05: 50 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-12-06: 10 页"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2025-12-07: 60 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-08: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-09: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-10: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-11: 20 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-12-12: 5 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-13: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-14: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-15: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2025-12-16: 5 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-12-17: 10 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-18: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-19: 30 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-20: 20 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-21: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-12-22: 50 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-12-23: 50 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-12-24: 10 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2025-12-25: 15 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2025-12-26: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-27: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-28: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-29: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2025-12-30: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2025-12-31: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-01-01: 5 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-01-02: 20 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-01-03: 10 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-04: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-01-05: 5 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-01-06: 5 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-07: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-01-08: 15 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-01-09: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-10: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#40c463" data-tooltip="2026-01-11: 10 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-12: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-01-13: 30 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-14: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-01-15: 50 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-01-16: 15 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-01-17: 20 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-18: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-01-19: 5 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-20: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-21: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-22: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-01-23: 50 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-01-24: 20 页"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2026-01-25: 60 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-01-26: 10 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-27: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-28: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-29: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-01-30: 10 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-01-31: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-01: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-02: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-03: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-02-04: 5 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-02-05: 15 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-02-06: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-07: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#30a14e" data-tooltip="2026-02-08: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-09: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-02-10: 30 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-02-11: 15 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-02-12: 15 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-02-13: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-14: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2026-02-15: 40 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-02-16: 5 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-17: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-02-18: 10 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-02-19: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-20: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-02-21: 10 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-22: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-02-23: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-24: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-25: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-02-26: 15 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-02-27: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-02-28: 20 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-01: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-03-02: 10 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-03: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-04: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-03-05: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-06: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-07: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2026-03-08: 60 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-03-09: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-10: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-11: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-03-12: 5 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-03-13: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-14: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2026-03-15: 40 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-16: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-17: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-03-18: 30 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-19: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-03-20: 10 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-21: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#30a14e" data-tooltip="2026-03-22: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-23: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-03-24: 15 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-25: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-26: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-27: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-28: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-29: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-03-30: 20 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-03-31: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-01: 20 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-04-02: 5 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-04-03: 15 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-04-04: 40 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-04-05: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-04-06: 50 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-04-07: 5 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-04-08: 50 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-04-09: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-04-10: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-11: 20 页"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2026-04-12: 60 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-04-13: 5 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-14: 20 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-15: 30 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-04-16: 50 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-04-17: 5 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-04-18: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#216e39" data-tooltip="2026-04-19: 60 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-20: 30 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-04-21: 10 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-22: 30 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-04-23: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-04-24: 5 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-04-25: 40 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-04-26: 未阅读"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-04-27: 20 页"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-04-28: 15 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-04-29: 50 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-04-30: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-01: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-02: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-03: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-05-04: 15 页"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-05-05: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-06: 未阅读"></div><div class="day-cell" style="background:#216e39" data-tooltip="2026-05-07: 50 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-08: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-09: 未阅读"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-10: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-11: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-05-12: 10 页"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-05-13: 5 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-14: 未阅读"></div><div class="day-cell" style="background:#9be9a8" data-tooltip="2026-05-15: 5 页"></div><div class="day-cell" style="background:#30a14e" data-tooltip="2026-05-16: 20 页"></div></div><div class="week-column"><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-17: 未阅读"></div><div class="day-cell" style="background:#40c463" data-tooltip="2026-05-18: 15 页"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-19: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-20: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-21: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-22: 未阅读"></div><div class="day-cell" style="background:#ebedf0" data-tooltip="2026-05-23: 未阅读"></div></div></div>
-    </div>
+  <div class="heatmap-outer" id="heatmap-outer">
+    <div class="loading">加载中…</div>
   </div>
 </div>
 <script>
-document.querySelectorAll('.day-cell').forEach(function(c){
-  c.addEventListener('mouseenter', function(e){
-    var t=document.createElement('div');
-    t.className='tooltip';
-    t.textContent=e.target.dataset.tooltip;
-    document.body.appendChild(t);
-    t.style.display='block';
-    var r=e.target.getBoundingClientRect();
-    t.style.left=(r.left + r.width/2 - t.offsetWidth/2)+'px';
-    t.style.top=(r.top - t.offsetHeight - 8)+'px';
-    e.target._t=t;
+async function main(){
+  let raw;
+  try{
+    const resp = await fetch('data.json');
+    raw = await resp.json();
+  }catch(e){
+    document.getElementById('heatmap-outer').innerHTML=
+      '<div class="loading" style="color:#f85149">加载 data.json 失败，请确认文件存在</div>';
+    return;
+  }
+
+  // raw: [{date, pages}, ...]
+  const data = {};
+  raw.forEach(r => { data[r.date] = r.pages; });
+
+  function color(p){
+    if(p==0) return '#ebedf0';
+    if(p<=5) return '#9be9a8';
+    if(p<=15) return '#40c463';
+    if(p<=35) return '#30a14e';
+    return '#216e39';
+  }
+
+  const today = new Date();
+  const dates = Object.keys(data).sort();
+  const [y0,m0,d0] = dates[0].split('-').map(Number);
+  let start = new Date(y0, m0-1, d0);
+  let end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  // 计算 stats
+  let totalDays=0, totalPages=0, streak=0, maxStreak=0, prevDate=null;
+  for(const ds of dates){
+    const p = data[ds];
+    if(p>0){
+      totalDays++;
+      totalPages += p;
+      const d = new Date(ds.replace(/-/g,'/'));
+      if(prevDate && (d-prevDate)/86400000===1) streak++;
+      else streak = 1;
+      maxStreak = Math.max(maxStreak, streak);
+      prevDate = d;
+    }
+  }
+  document.getElementById('st-days').textContent = totalDays;
+  document.getElementById('st-pages').textContent = totalPages;
+  document.getElementById('st-avg').textContent = Math.round(totalPages/totalDays)||0;
+  document.getElementById('st-streak').textContent = maxStreak;
+
+  // 构建周网格
+  const dow = (start.getDay()+6)%7; // 周一起始
+  let weeks = [];
+  for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){
+    if(d.getDay()===1 || weeks.length===0){
+      // 每周从周一开始，但 grid_start 已经对齐
+    }
+  }
+
+  // 简化：直接按周分组
+  let allWeeks = [];
+  let cur = new Date(start);
+  while(cur <= end){
+    let week = [];
+    for(let i=0;i<7;i++){
+      let d = new Date(cur); d.setDate(cur.getDate()+i);
+      week.push(new Date(d));
+    }
+    allWeeks.push(week);
+    cur.setDate(cur.getDate()+7);
+  }
+  // 过滤掉全 null 的周
+  const startDateStr = dates[0];
+  const endDateStr = dates[dates.length-1];
+  weeks = allWeeks.filter(w => w.some(d => {
+    const s = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    return s >= startDateStr && s <= endDateStr;
+  }));
+  const nWeeks = weeks.length;
+
+  // 月份标签
+  let monthCols = [];
+  let prevMo = -1;
+  const moNames = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  weeks.forEach((w,i) => {
+    for(const d of w){
+      const s = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      if(s >= startDateStr && d.getMonth()+1 !== prevMo){
+        monthCols.push([i, moNames[d.getMonth()+1]]);
+        prevMo = d.getMonth()+1;
+        break;
+      }
+      if(s >= startDateStr) break;
+    }
   });
-  c.addEventListener('mouseleave', function(e){
-    if(e.target._t){e.target._t.remove();}
+
+  let monthCells = [];
+  for(let i=0;i<nWeeks;i++){
+    const mc = monthCols.find(m => m[0]===i);
+    if(mc) monthCells.push('<div style="grid-column:'+(i+2)+';font-size:11px;color:#8b949e;text-align:center">'+mc[1]+'</div>');
+    else monthCells.push('<div style="grid-column:'+(i+2)+'"></div>');
+  }
+  const monthHtml = '<div style="display:grid;grid-template-columns:40px repeat('+nWeeks+',13px);gap:3px;margin-bottom:2px">'+
+    '<div></div>'+monthCells.join('')+'</div>';
+
+  // 星期标签
+  const dayLabels = '<div class="week-labels">'+
+    '<div class="day-label"></div><div class="day-label">Mon</div>'+
+    '<div class="day-label"></div><div class="day-label">Wed</div>'+
+    '<div class="day-label"></div><div class="day-label">Fri</div>'+
+    '<div class="day-label"></div></div>';
+
+  // 格子
+  let cols = [];
+  weeks.forEach(w => {
+    let cells = [];
+    w.forEach(d => {
+      const s = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      if(s < startDateStr || s > endDateStr){
+        cells.push('<div class="day-cell" style="background:#ebedf0;visibility:hidden"></div>');
+      } else {
+        const p = data[s]||0;
+        const c = color(p);
+        const tip = p>0 ? s+': '+p+' 页' : s+': 未阅读';
+        cells.push('<div class="day-cell" style="background:'+c+'" data-tooltip="'+tip+'"></div>');
+      }
+    });
+    cols.push('<div class="week-column">'+cells.join('')+'</div>');
   });
-});
+  const heatHtml = '<div style="display:grid;grid-template-columns:40px repeat('+nWeeks+',13px);gap:3px">'+
+    dayLabels+'
+  <div style="display:flex;gap:3px">'+cols.join('')+'</div></div>';
+
+  document.getElementById('heatmap-outer').innerHTML = monthHtml + heatHtml;
+
+  // tooltip
+  document.querySelectorAll('.day-cell').forEach(function(c){
+    c.addEventListener('mouseenter', function(e){
+      var t=document.createElement('div');
+      t.className='tooltip';
+      t.textContent=e.target.dataset.tooltip;
+      document.body.appendChild(t);
+      t.style.display='block';
+      var r=e.target.getBoundingClientRect();
+      t.style.left=(r.left+r.width/2-t.offsetWidth/2)+'px';
+      t.style.top=(r.top-t.offsetHeight-8)+'px';
+      e.target._t=t;
+    });
+    c.addEventListener('mouseleave', function(e){
+      if(e.target._t){e.target._t.remove();}
+    });
+  });
+}
+main();
 </script>
 </body>
 </html>
